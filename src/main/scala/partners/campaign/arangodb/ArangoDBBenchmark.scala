@@ -9,6 +9,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ArangoDBBenchmark extends DatabaseBenchmark {
+  override def name: String = "arangodb"
+
   override def setup(): Future[Unit] = Database.init().map(_ => ())
 
   override def insertSimple(key: String, value: Int): Future[Unit] = {
@@ -24,6 +26,29 @@ object ArangoDBBenchmark extends DatabaseBenchmark {
            RETURN length
          """
     call[Int](query)
+  }
+
+  override def selectSimpleRange(start: Int, end: Int): Future[List[String]] = {
+    import Database._
+    val query =
+      aql"""
+           FOR s IN $simple
+           FILTER s.value >= $start
+           FILTER s.value <= $end
+           RETURN s._key
+         """
+    cursor[String](query, batchSize = Some(end - start)).map(_.result)
+  }
+
+  override def sumSimple(): Future[Long] = {
+    import Database._
+    val query =
+      aql"""
+           FOR s IN $simple
+           COLLECT AGGREGATE total = SUM(s.value)
+           RETURN total
+         """
+    call[Long](query)
   }
 
   override def cleanup(): Future[Unit] = Database.delete().map(_ => ())

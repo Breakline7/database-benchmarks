@@ -7,9 +7,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 object DatabaseBenchmarks extends ConfigApplication {
-  private val databases: Map[String, DatabaseBenchmark] = Map(
-    "arangodb" -> ArangoDBBenchmark
-  )
+  private val databases: Map[String, DatabaseBenchmark] = List(
+    ArangoDBBenchmark
+  ).map(db => (db.name, db)).toMap
 
   lazy val config = Config("database")
 
@@ -20,10 +20,8 @@ object DatabaseBenchmarks extends ConfigApplication {
       case Some(db) => databases.get(db) match {
         case Some(benchmark) => {
           Await.result(benchmark.run(), 10.minutes)
-          scribe.info(s"Setup: ${benchmark.stats.setup}")
-          scribe.info(s"Simple Inserts: ${benchmark.stats.simple.insert}")
-          scribe.info(s"Simple Count: ${benchmark.stats.simple.count}")
-          scribe.info(s"Cleanup: ${benchmark.stats.cleanup}")
+          scribe.info("Cool down...")
+          Thread.sleep(5000L)
           sys.exit()
         }
         case None => println(s"`$db` is not a valid database benchmark. Valid options are: ${databases.keySet.mkString(", ")}")
