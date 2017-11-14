@@ -4,6 +4,7 @@ import org.neo4j.driver.v1.{AuthTokens, GraphDatabase, Transaction, TransactionW
 import partners.campaign.{BenchmarkPaginated, DatabaseBenchmark, SimpleData}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.collection.JavaConverters._
 
@@ -25,8 +26,8 @@ object Neo4JBenchmark extends DatabaseBenchmark {
             |CREATE (s: Simple)
             |SET s.value = $value
             |SET s.dataId = $id
-            |RETURN id(a)
-          """.stripMargin, Map[String, AnyRef]("value" -> data.value, "id" -> data.id).asJava)
+            |RETURN id(s)
+          """.stripMargin, Map[String, AnyRef]("value" -> data.value.toString, "id" -> data.id).asJava)
         result.single().get(0).asString()
       }
     })
@@ -59,7 +60,7 @@ object Neo4JBenchmark extends DatabaseBenchmark {
             |WHERE s.value >= $start AND s.value < $end
             |RETURN s.dataId
           """.stripMargin,
-          Map[String, AnyRef]("start" -> start, "end" -> end).asJava
+          Map[String, AnyRef]("start" -> start.toString, "end" -> end.toString).asJava
         )
         result.list().asScala.toList.map(_.values().get(0).asString())
       }
