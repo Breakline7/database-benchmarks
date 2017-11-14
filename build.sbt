@@ -6,5 +6,5 @@ scalaVersion := "2.12.4"
 fork := true
 
 libraryDependencies ++= Seq(
-  "com.outr" %% "scarango-driver" % "0.8.3"
+  "com.outr" %% "scarango-driver" % "0.8.4-SNAPSHOT"
 )

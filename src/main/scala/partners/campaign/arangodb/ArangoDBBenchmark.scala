@@ -1,20 +1,26 @@
 package partners.campaign.arangodb
 
 import com.outr.arango.DocumentOption
-import partners.campaign.DatabaseBenchmark
+import partners.campaign.{BenchmarkPaginated, DatabaseBenchmark, SimpleData}
 import com.outr.arango._
 import com.outr.arango.managed._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import io.circe.generic.auto._
+
 object ArangoDBBenchmark extends DatabaseBenchmark {
   override def name: String = "arangodb"
 
   override def setup(): Future[Unit] = Database.init().map(_ => ())
 
-  override def insertSimple(key: String, value: Int): Future[Unit] = {
-    Database.simple.insert(Simple(value, Some(key))).map(_ => ())
+  override def insertSimple(data: SimpleData): Future[Unit] = {
+    Database.simple.insert(Simple(data.value, Some(data.id))).map(_ => ())
+  }
+
+  override def insertSimpleBatch(entries: List[SimpleData]): Future[Unit] = {
+    Database.simple.collection.document.bulk.insert(entries, waitForSync = true).map(_ => ())
   }
 
   override def countSimple(): Future[Int] = {
@@ -49,6 +55,13 @@ object ArangoDBBenchmark extends DatabaseBenchmark {
            RETURN total
          """
     call[Long](query)
+  }
+
+  override def paginatedSimple(batchSize: Int): BenchmarkPaginated = {
+    val results = Database.simple.all(batchSize).map(_.toIterator)
+    new BenchmarkPaginated {
+      override def next(): Future[List[Int]] = results.map(_.take(batchSize).map(_.value).toList)
+    }
   }
 
   override def cleanup(): Future[Unit] = Database.delete().map(_ => ())

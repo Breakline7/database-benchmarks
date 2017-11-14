@@ -19,7 +19,8 @@ object DatabaseBenchmarks extends ConfigApplication {
     config("benchmark").as[Option[String]] match {
       case Some(db) => databases.get(db) match {
         case Some(benchmark) => {
-          Await.result(benchmark.run(), 10.minutes)
+          SimpleData.init()
+          Await.result(benchmark.run(), Duration.Inf)
           scribe.info("Cool down...")
           Thread.sleep(5000L)
           sys.exit()
