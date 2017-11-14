@@ -66,12 +66,3 @@ object ArangoDBBenchmark extends DatabaseBenchmark {
 
   override def cleanup(): Future[Unit] = Database.delete().map(_ => ())
 }
-
-case class Simple(value: Int,
-                  _key: Option[String],
-                  _id: Option[String] = None,
-                  _rev: Option[String] = None) extends DocumentOption
-
-object Database extends Graph("benchmark") {
-  val simple: VertexCollection[Simple] = vertex[Simple]("simple")
-}

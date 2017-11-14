@@ -1,6 +1,7 @@
 package partners.campaign
 
 import partners.campaign.arangodb.ArangoDBBenchmark
+import partners.campaign.mongodb.MongoDBBenchmark
 import profig.{Config, ConfigApplication}
 
 import scala.concurrent.Await
@@ -8,7 +9,8 @@ import scala.concurrent.duration._
 
 object DatabaseBenchmarks extends ConfigApplication {
   private val databases: Map[String, DatabaseBenchmark] = List(
-    ArangoDBBenchmark
+    ArangoDBBenchmark,
+    MongoDBBenchmark
   ).map(db => (db.name, db)).toMap
 
   lazy val config = Config("database")
