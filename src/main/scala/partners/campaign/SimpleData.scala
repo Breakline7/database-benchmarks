@@ -4,7 +4,7 @@ import java.io._
 
 import io.youi.Unique
 
-class SimpleDataInstance(total: Int) {
+class SimpleDataInstance(total: Int, offset: Int) {
   private lazy val directory = new File("data")
   private lazy val file = new File(directory, s"simple$total.csv")
   private lazy val reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))
@@ -19,7 +19,8 @@ class SimpleDataInstance(total: Int) {
 
     val b = new FileWriter(file)
     (0 until total).foreach { index =>
-      b.write(s"$index,${Unique(8)}\n")
+      val i = index + offset
+      b.write(s"$i,${Unique(8)}\n")
     }
     b.flush()
     b.close()
@@ -28,8 +29,8 @@ class SimpleDataInstance(total: Int) {
 }
 
 object SimpleData {
-  lazy val single: SimpleDataInstance = new SimpleDataInstance(10000)
-  lazy val bulk: SimpleDataInstance = new SimpleDataInstance(100000)
+  lazy val single: SimpleDataInstance = new SimpleDataInstance(10000, 0)
+  lazy val bulk: SimpleDataInstance = new SimpleDataInstance(100000, 10000)
 
   def init(): Unit = {
     single.generate()

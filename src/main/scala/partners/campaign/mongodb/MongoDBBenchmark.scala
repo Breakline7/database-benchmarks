@@ -39,7 +39,7 @@ object MongoDBBenchmark extends DatabaseBenchmark {
   }
 
   override def selectSimpleRange(start: Int, end: Int): Future[List[String]] = {
-    simple.find(and(gte("value", start), lte("value", end))).toFuture().map { docs =>
+    simple.find(and(gte("value", start), lt("value", end))).toFuture().map { docs =>
       docs.map(_.getString("_id")).toList
     }
   }
