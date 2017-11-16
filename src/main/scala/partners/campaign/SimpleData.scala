@@ -29,8 +29,8 @@ class SimpleDataInstance(total: Int, offset: Int) {
 }
 
 object SimpleData {
-  lazy val single: SimpleDataInstance = new SimpleDataInstance(10000, 0)
-  lazy val bulk: SimpleDataInstance = new SimpleDataInstance(100000, 10000)
+  lazy val single: SimpleDataInstance = new SimpleDataInstance(1000, 0)
+  lazy val bulk: SimpleDataInstance = new SimpleDataInstance(10000, 1000)
 
   def init(): Unit = {
     single.generate()
@@ -38,4 +38,6 @@ object SimpleData {
   }
 }
 
-class SimpleData(val value: Int, val id: String)
+class SimpleData(val value: Int, val id: String) {
+  override def toString: String = s"SimpleData(value: $value, id: $id)"
+}

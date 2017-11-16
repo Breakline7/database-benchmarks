@@ -3,8 +3,7 @@ Benchmarks comparing various database options.
 
 ## Benchmarked Database
 * [X] ArangoDB
-* [ ] Blazegraph
 * [ ] MariaDB
 * [X] MongoDB
-* [ ] Neo4j
+* [X] Neo4j
 * [ ] OrientDB
